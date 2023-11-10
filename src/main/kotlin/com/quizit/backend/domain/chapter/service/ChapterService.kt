@@ -32,7 +32,6 @@ class ChapterService(
 
     fun getProgressById(id: String, userId: String): Mono<GetProgressByIdResponse> =
         quizRepository.findAllByChapterId(id)
-            .switchIfEmpty(Mono.error(ChapterNotFoundException()))
             .map { it.id!! }
             .collectList()
             .zipWith(userRepository.findById(userId))

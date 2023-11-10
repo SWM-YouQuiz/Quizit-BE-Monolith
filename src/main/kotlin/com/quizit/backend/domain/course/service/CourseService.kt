@@ -32,7 +32,6 @@ class CourseService(
 
     fun getProgressById(id: String, userId: String): Mono<GetProgressByIdResponse> =
         quizRepository.findAllByCourseId(id)
-            .switchIfEmpty(Mono.error(CourseNotFoundException()))
             .map { it.id!! }
             .collectList()
             .zipWith(userRepository.findById(userId))
