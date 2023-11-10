@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    include: oauth
+  webflux:
+    base-path: /api
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+jwt:
+  secretKey: ${JWT_SECRET}
+  accessTokenExpire: ${JWT_ACCESS_EXPIRE}
+  refreshTokenExpire: ${JWT_REFRESH_EXPIRE}

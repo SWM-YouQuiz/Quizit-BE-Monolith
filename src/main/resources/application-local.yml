@@ -1,0 +1,17 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/quizit
+    redis:
+      host: localhost
+      port: 6379
+jwt:
+  secretKey: dsaijodajadsjdsalkjadslkjadsljlajkdslkjadslkjadsjlklsad
+  accessTokenExpire: 30
+  refreshTokenExpire: 60
+uri:
+  frontend: http://localhost:3000
+logging:
+  level:
+    org.springframework:
+      data.mongodb: debug

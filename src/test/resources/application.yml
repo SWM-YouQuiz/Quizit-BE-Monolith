@@ -1,0 +1,6 @@
+jwt:
+  secretKey: dsaijodajadsjdsalkjadslkjadsljlajkdslkjadslkjadsjlklsad
+  accessTokenExpire: 30
+  refreshTokenExpire: 60
+url:
+  frontend: http://localhost:3000
