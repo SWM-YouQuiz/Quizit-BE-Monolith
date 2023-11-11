@@ -20,7 +20,7 @@ class AppleOAuth2Handler(
         ServerResponse.status(HttpStatus.FOUND)
             .location(
                 URI.create(
-                    "https://appleid.apple.com/auth/authorize?response_mode=form_post&response_type=code&client_id=${appleOAuth2Provider.clientId}&scope=name%20email&&redirect_uri=$frontendUri/api/auth/oauth2/redirect/apple/revoke"
+                    "https://appleid.apple.com/auth/authorize?response_mode=form_post&response_type=code&client_id=${appleOAuth2Provider.clientId}&scope=name%20email&&redirect_uri=$frontendUri/api/oauth2/redirect/apple/revoke"
                 )
             ).build()
 

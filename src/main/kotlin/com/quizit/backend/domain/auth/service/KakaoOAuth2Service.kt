@@ -18,7 +18,7 @@ class KakaoOAuth2Service(
     private val frontendUri: String
 ) {
     fun revokeRedirect(code: String): Mono<ServerResponse> =
-        kakaoClient.getTokenResponseByCodeAndRedirectUri(code, "$frontendUri/api/auth/oauth2/redirect/kakao/revoke")
+        kakaoClient.getTokenResponseByCodeAndRedirectUri(code, "$frontendUri/api/oauth2/redirect/kakao/revoke")
             .map { it["access_token"] as String }
             .flatMap {
                 Mono.zip(

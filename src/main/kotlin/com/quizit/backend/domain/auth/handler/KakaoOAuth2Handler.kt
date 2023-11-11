@@ -22,7 +22,7 @@ class KakaoOAuth2Handler(
         ServerResponse.status(HttpStatus.FOUND)
             .location(
                 URI.create(
-                    "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=$clientId&scope=profile_nickname%20account_email&redirect_uri=$frontendUri/api/auth/oauth2/redirect/kakao/revoke"
+                    "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=$clientId&scope=profile_nickname%20account_email&redirect_uri=$frontendUri/api/oauth2/redirect/kakao/revoke"
                 )
             ).build()
 

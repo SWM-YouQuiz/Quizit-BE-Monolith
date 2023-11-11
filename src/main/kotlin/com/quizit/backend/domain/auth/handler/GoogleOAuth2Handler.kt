@@ -22,7 +22,7 @@ class GoogleOAuth2Handler(
         ServerResponse.status(HttpStatus.FOUND)
             .location(
                 URI.create(
-                    "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent&response_type=code&client_id=$clientId&redirect_uri=$frontendUri/api/auth/oauth2/redirect/google/revoke&scope=profile%20email"
+                    "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent&response_type=code&client_id=$clientId&redirect_uri=$frontendUri/api/oauth2/redirect/google/revoke&scope=profile%20email"
                 )
             ).build()
 

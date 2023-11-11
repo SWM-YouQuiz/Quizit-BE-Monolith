@@ -53,7 +53,7 @@ class AppleOAuth2Service(
             .switchIfEmpty(
                 Mono.defer {
                     appleClient.getTokenResponseByCodeAndRedirectUri(
-                        loginResponse["code"]!!.first(), "$frontendUri/api/auth/oauth2/redirect/apple"
+                        loginResponse["code"]!!.first(), "$frontendUri/api/oauth2/redirect/apple"
                     ).flatMap { appleClient.getOAuth2UserByToken(it["id_token"] as String) }
                 }
             )
@@ -61,7 +61,7 @@ class AppleOAuth2Service(
 
     fun revokeRedirect(loginResponse: MultiValueMap<String, String>): Mono<ServerResponse> =
         appleClient.getTokenResponseByCodeAndRedirectUri(
-            loginResponse["code"]!!.first(), "$frontendUri/api/auth/oauth2/redirect/apple/revoke"
+            loginResponse["code"]!!.first(), "$frontendUri/api/oauth2/redirect/apple/revoke"
         ).flatMap {
             Mono.zip(
                 appleClient.getOAuth2UserByToken(it["id_token"] as String),
