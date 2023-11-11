@@ -34,6 +34,6 @@ class GlobalExceptionHandler(
                 bufferFactory()
                     .wrap(objectMapper.writeValueAsBytes(errorResponse))
                     .toMono()
-            )
+            ).doOnSuccess { logger.info { "HTTP $statusCode" } }
         }
 }
