@@ -13,7 +13,6 @@ import com.quizit.backend.domain.user.model.enum.Provider
 import com.quizit.backend.domain.user.service.UserService
 import com.quizit.backend.global.jwt.JwtAuthentication
 import com.quizit.backend.global.jwt.JwtProvider
-import com.quizit.backend.global.util.component1
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
@@ -62,20 +61,19 @@ class AppleOAuth2Service(
     fun revokeRedirect(loginResponse: MultiValueMap<String, String>): Mono<ServerResponse> =
         appleClient.getTokenResponseByCodeAndRedirectUri(
             loginResponse["code"]!!.first(), "$frontendUri/api/oauth2/redirect/apple/revoke"
-        ).flatMap {
-            Mono.zip(
-                appleClient.getOAuth2UserByToken(it["id_token"] as String),
-                appleClient.revokeByToken(it["access_token"] as String)
+        ).flatMap { tokenResponse ->
+            appleClient.getOAuth2UserByToken(tokenResponse["id_token"] as String)
+                .cache()
+                .let {
+                    Mono.`when`(it, appleClient.revokeByToken(tokenResponse["access_token"] as String))
+                        .then(it)
+                }
+        }.flatMap { userService.deleteUserByEmailAndProvider(it.email, it.provider) }
+            .then(
+                ServerResponse.status(HttpStatus.FOUND)
+                    .location(URI.create(frontendUri))
+                    .build()
             )
-        }.flatMap { (oAuth2UserInfo) ->
-            userService.deleteUserByEmailAndProvider(
-                oAuth2UserInfo.email, oAuth2UserInfo.provider
-            )
-        }.then(
-            ServerResponse.status(HttpStatus.FOUND)
-                .location(URI.create(frontendUri))
-                .build()
-        )
 
     private fun OAuth2UserInfo.onAuthenticationSuccess(): Mono<ServerResponse> {
         var isSignUp = false

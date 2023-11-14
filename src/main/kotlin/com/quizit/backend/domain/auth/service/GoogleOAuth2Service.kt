@@ -2,7 +2,6 @@ package com.quizit.backend.domain.auth.service
 
 import com.quizit.backend.domain.auth.adapter.client.GoogleClient
 import com.quizit.backend.domain.user.service.UserService
-import com.quizit.backend.global.util.component1
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -20,13 +19,15 @@ class GoogleOAuth2Service(
     fun revokeRedirect(code: String): Mono<ServerResponse> =
         googleClient.getTokenResponseByCodeAndRedirectUri(code, "$frontendUri/api/oauth2/redirect/google/revoke")
             .map { it["access_token"] as String }
-            .flatMap {
-                Mono.zip(
-                    googleClient.getOAuth2UserByToken(it),
-                    googleClient.revokeByToken(it)
-                )
+            .flatMap { token ->
+                googleClient.getOAuth2UserByToken(token)
+                    .cache()
+                    .let {
+                        Mono.`when`(it, googleClient.revokeByToken(token))
+                            .then(it)
+                    }
             }
-            .flatMap { (oAuth2User) -> userService.deleteUserByEmailAndProvider(oAuth2User.email, oAuth2User.provider) }
+            .flatMap { userService.deleteUserByEmailAndProvider(it.email, it.provider) }
             .then(Mono.defer {
                 ServerResponse.status(HttpStatus.FOUND)
                     .location(URI.create(frontendUri))
