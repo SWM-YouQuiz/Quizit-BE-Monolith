@@ -25,11 +25,13 @@ data class User(
     val createdDate: LocalDateTime = LocalDateTime.now()
 ) {
     fun correctAnswer(quizId: String) {
+        incorrectQuizIds.remove(quizId)
         correctQuizIds.add(quizId)
         changeAnswerRate()
     }
 
     fun incorrectAnswer(quizId: String) {
+        correctQuizIds.remove(quizId)
         incorrectQuizIds.add(quizId)
         changeAnswerRate()
     }

@@ -213,41 +213,6 @@ class QuizServiceTest : BehaviorSpec() {
             }
         }
 
-        Given("유저가 이미 푼 퀴즈가 존재하는 경우") {
-            createQuiz(id = "quiz")
-                .also {
-                    every { quizRepository.findById(any<String>()) } returns it
-                    every { quizRepository.save(any()) } returns it
-                }
-            createUser()
-                .also {
-                    every { userRepository.findById(any<String>()) } returns it
-                }
-
-            When("해당 퀴즈를 풀고 정답을 제출하면") {
-                val result = quizService.checkAnswer(CORRECT_QUIZ_IDS.random(), ID, createCheckAnswerRequest())
-                    .getResult()
-
-                Then("채점만 되고 정답률은 변경되지 않는다.") {
-                    result.expectSubscription()
-                        .assertNext { verify(exactly = 0) { quizRepository.save(any()) } }
-                        .verifyComplete()
-                }
-            }
-
-            When("해당 퀴즈를 풀고 오답을 제출하면") {
-                val result =
-                    quizService.checkAnswer(CORRECT_QUIZ_IDS.random(), ID, createCheckAnswerRequest(answer = -1))
-                        .getResult()
-
-                Then("채점만 되고 정답률은 변경되지 않는다.") {
-                    result.expectSubscription()
-                        .assertNext { verify(exactly = 0) { quizRepository.save(any()) } }
-                        .verifyComplete()
-                }
-            }
-        }
-
         Given("유저가 퀴즈를 작성하는 중인 경우") {
             val quiz = createQuiz()
                 .also {

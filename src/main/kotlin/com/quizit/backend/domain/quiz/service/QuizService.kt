@@ -138,17 +138,15 @@ class QuizService(
                     this,
                     userRepository.findById(userId)
                         .switchIfEmpty(Mono.error(UserNotFoundException()))
-                ).filter { (_, user) -> (id !in user.correctQuizIds) && (id !in user.incorrectQuizIds) }
-                    .doOnNext { (quiz, user) ->
-                        if (request.answer == quiz.answer) {
-                            quiz.correctAnswer()
-                            user.correctAnswer(id)
-                        } else {
-                            quiz.incorrectAnswer()
-                            user.incorrectAnswer(id)
-                        }
+                ).doOnNext { (quiz, user) ->
+                    if (request.answer == quiz.answer) {
+                        quiz.correctAnswer()
+                        user.correctAnswer(id)
+                    } else {
+                        quiz.incorrectAnswer()
+                        user.incorrectAnswer(id)
                     }
-                    .flatMap { (quiz, user) -> Mono.zip(quizRepository.save(quiz), userRepository.save(user)) }
+                }.flatMap { (quiz, user) -> Mono.zip(quizRepository.save(quiz), userRepository.save(user)) }
                     .then(map {
                         CheckAnswerResponse(
                             answer = it.answer,
