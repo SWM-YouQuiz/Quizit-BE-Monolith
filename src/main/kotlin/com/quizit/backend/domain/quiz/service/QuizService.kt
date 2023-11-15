@@ -6,6 +6,7 @@ import com.quizit.backend.domain.quiz.dto.request.CheckAnswerRequest
 import com.quizit.backend.domain.quiz.dto.request.CreateQuizRequest
 import com.quizit.backend.domain.quiz.dto.request.UpdateQuizByIdRequest
 import com.quizit.backend.domain.quiz.dto.response.CheckAnswerResponse
+import com.quizit.backend.domain.quiz.dto.response.GetAnswerByIdResponse
 import com.quizit.backend.domain.quiz.dto.response.QuizResponse
 import com.quizit.backend.domain.quiz.exception.QuizNotFoundException
 import com.quizit.backend.domain.quiz.model.Quiz
@@ -33,6 +34,11 @@ class QuizService(
         quizRepository.findById(id)
             .switchIfEmpty(Mono.error(QuizNotFoundException()))
             .map { QuizResponse(it) }
+
+    fun getAnswerById(id: String): Mono<GetAnswerByIdResponse> =
+        quizRepository.findById(id)
+            .switchIfEmpty(Mono.error(QuizNotFoundException()))
+            .map { GetAnswerByIdResponse(it) }
 
     fun getQuizzesByChapterId(chapterId: String): Flux<QuizResponse> =
         quizRepository.findAllByChapterId(chapterId)
