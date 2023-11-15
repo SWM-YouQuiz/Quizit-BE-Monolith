@@ -2,6 +2,7 @@ package com.quizit.backend.controller
 
 import com.ninjasquad.springmockk.MockkBean
 import com.quizit.backend.domain.quiz.dto.response.CheckAnswerResponse
+import com.quizit.backend.domain.quiz.dto.response.GetAnswerByIdResponse
 import com.quizit.backend.domain.quiz.dto.response.QuizResponse
 import com.quizit.backend.domain.quiz.exception.QuizNotFoundException
 import com.quizit.backend.domain.quiz.handler.QuizHandler
@@ -61,6 +62,10 @@ class QuizControllerTest : ControllerTest() {
         "createdDate" desc "생성 날짜",
     )
 
+    private val getAnswerByIdResponseFields = listOf(
+        "answer" desc "정답"
+    )
+
     private val checkAnswerResponseFields = listOf(
         "answer" desc "정답",
         "solution" desc "해설"
@@ -102,6 +107,48 @@ class QuizControllerTest : ControllerTest() {
                         .expectBody<ErrorResponse>()
                         .document(
                             "식별자를 통한 퀴즈 단일 조회 실패(404)",
+                            pathParameters("id" paramDesc "식별자"),
+                            responseFields(errorResponseFields)
+                        )
+                }
+            }
+        }
+
+        describe("getAnswerById()는") {
+            context("퀴즈가 존재하는 경우") {
+                every { quizService.getAnswerById(any()) } returns createGetAnswerByIdResponse()
+                withMockAdmin()
+
+                it("상태 코드 200과 getAnswerByIdResponse를 반환한다.") {
+                    webClient
+                        .get()
+                        .uri("/admin/quiz/{id}/answer", ID)
+                        .exchange()
+                        .expectStatus()
+                        .isOk
+                        .expectBody<GetAnswerByIdResponse>()
+                        .document(
+                            "식별자를 통한 퀴즈 정답 조회 성공(200)",
+                            pathParameters("id" paramDesc "식별자"),
+                            responseFields(getAnswerByIdResponseFields)
+                        )
+                }
+            }
+
+            context("퀴즈가 존재하지 않는 경우") {
+                every { quizService.getAnswerById(any()) } throws QuizNotFoundException()
+                withMockAdmin()
+
+                it("상태 코드 404를 반환한다.") {
+                    webClient
+                        .get()
+                        .uri("/admin/quiz/{id}/answer", ID)
+                        .exchange()
+                        .expectStatus()
+                        .isNotFound
+                        .expectBody<ErrorResponse>()
+                        .document(
+                            "식별자를 통한 퀴즈 정답 조회 실패(404)",
                             pathParameters("id" paramDesc "식별자"),
                             responseFields(errorResponseFields)
                         )

@@ -70,6 +70,17 @@ class QuizServiceTest : BehaviorSpec() {
                 }
             }
 
+            When("어드민이 특정 퀴즈의 정답을 조회하면") {
+                val result = quizService.getAnswerById(ID)
+                    .getResult()
+
+                Then("해당 퀴즈의 정답이 조회된다.") {
+                    result.expectSubscription()
+                        .expectNext(createGetAnswerByIdResponse())
+                        .verifyComplete()
+                }
+            }
+
             When("특정 코스에 속한 퀴즈들을 조회하면") {
                 val result = quizService.getQuizzesByCourseId(ID)
                     .getResult()
@@ -179,12 +190,12 @@ class QuizServiceTest : BehaviorSpec() {
         }
 
         Given("유저가 퀴즈를 푼 경우") {
-            createQuiz()
+            val quiz = createQuiz()
                 .also {
                     every { quizRepository.findById(any<String>()) } returns it
                     every { quizRepository.save(any()) } returns it
                 }
-            createUser()
+            val user = createUser()
                 .also {
                     every { userRepository.findById(any<String>()) } returns it
                     every { userRepository.save(any()) } returns it
@@ -218,11 +229,11 @@ class QuizServiceTest : BehaviorSpec() {
                 .also {
                     every { quizRepository.save(any()) } returns it
                 }
-            createChapter()
+            val chapter = createChapter()
                 .also {
                     every { chapterRepository.findById(any<String>()) } returns it
                 }
-            createCourse()
+            val course = createCourse()
                 .also {
                     every { courseRepository.findById(any<String>()) } returns it
                 }

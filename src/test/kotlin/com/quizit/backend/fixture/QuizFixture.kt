@@ -4,6 +4,7 @@ import com.quizit.backend.domain.quiz.dto.request.CheckAnswerRequest
 import com.quizit.backend.domain.quiz.dto.request.CreateQuizRequest
 import com.quizit.backend.domain.quiz.dto.request.UpdateQuizByIdRequest
 import com.quizit.backend.domain.quiz.dto.response.CheckAnswerResponse
+import com.quizit.backend.domain.quiz.dto.response.GetAnswerByIdResponse
 import com.quizit.backend.domain.quiz.dto.response.GetProgressByIdResponse
 import com.quizit.backend.domain.quiz.dto.response.QuizResponse
 import com.quizit.backend.domain.quiz.model.Quiz
@@ -21,15 +22,6 @@ val LIKED_USER_IDS = hashSetOf("1")
 val UNLIKED_USER_IDS = hashSetOf("1")
 const val TOTAL = 1
 const val SOLVED = 0
-
-fun createGetProgressByIdResponse(
-    total: Int = TOTAL,
-    solved: Int = SOLVED
-): GetProgressByIdResponse =
-    GetProgressByIdResponse(
-        total = total,
-        solved = solved
-    )
 
 fun createCreateQuizRequest(
     question: String = QUESTION,
@@ -65,6 +57,20 @@ fun createCheckAnswerRequest(
     answer: Int = ANSWER
 ): CheckAnswerRequest =
     CheckAnswerRequest(answer)
+
+fun createGetProgressByIdResponse(
+    total: Int = TOTAL,
+    solved: Int = SOLVED
+): GetProgressByIdResponse =
+    GetProgressByIdResponse(
+        total = total,
+        solved = solved
+    )
+
+fun createGetAnswerByIdResponse(
+    answer: Int = ANSWER
+): GetAnswerByIdResponse =
+    GetAnswerByIdResponse(answer)
 
 fun createCheckAnswerResponse(
     answer: Int = ANSWER,
