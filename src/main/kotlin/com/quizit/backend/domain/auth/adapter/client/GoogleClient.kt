@@ -17,8 +17,8 @@ class GoogleClient(
     private val clientSecret: String,
 ) {
     fun getOAuth2UserByToken(token: String): Mono<GoogleOAuth2UserInfo> =
-        webClient.post()
-            .uri("GET https://www.googleapis.com/oauth2/v3/userinfo")
+        webClient.get()
+            .uri("https://www.googleapis.com/oauth2/v3/userinfo")
             .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
             .retrieve()
             .bodyToMono<Map<String, *>>()
@@ -35,7 +35,7 @@ class GoogleClient(
 
     fun revokeByToken(token: String): Mono<Void> =
         webClient.post()
-            .uri("POST https://oauth2.googleapis.com/revoke?token={token}", token)
+            .uri("https://oauth2.googleapis.com/revoke?token={token}", token)
             .retrieve()
             .bodyToMono()
 }
