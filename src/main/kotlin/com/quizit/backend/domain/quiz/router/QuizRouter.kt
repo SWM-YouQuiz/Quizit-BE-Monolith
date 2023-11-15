@@ -34,6 +34,9 @@ class QuizRouter {
                 PUT("/{id}", handler::updateQuizById)
                 DELETE("/{id}", handler::deleteQuizById)
             }
+            "/admin/quiz".nest {
+                GET("/{id}/answer", handler::getAnswerById)
+            }
             filter(::logFilter)
         }
 }
