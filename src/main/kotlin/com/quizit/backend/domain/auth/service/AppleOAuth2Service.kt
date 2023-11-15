@@ -68,12 +68,17 @@ class AppleOAuth2Service(
                     Mono.`when`(it, appleClient.revokeByToken(tokenResponse["access_token"] as String))
                         .then(it)
                 }
-        }.flatMap { userService.deleteUserByEmailAndProvider(it.email, it.provider) }
-            .then(
-                ServerResponse.status(HttpStatus.FOUND)
-                    .location(URI.create(frontendUri))
-                    .build()
+        }.flatMap {
+            Mono.`when`(
+                userService.deleteUserByEmailAndProvider(it.email, it.provider),
+                userService.getUserByEmailAndProvider(it.email, it.provider)
+                    .flatMap { user -> tokenRepository.deleteByUserId(user.id) }
             )
+        }.then(
+            ServerResponse.status(HttpStatus.FOUND)
+                .location(URI.create(frontendUri))
+                .build()
+        )
 
     private fun OAuth2UserInfo.onAuthenticationSuccess(): Mono<ServerResponse> {
         var isSignUp = false

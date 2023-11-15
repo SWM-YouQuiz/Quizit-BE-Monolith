@@ -1,6 +1,7 @@
 package com.quizit.backend.domain.auth.service
 
 import com.quizit.backend.domain.auth.adapter.client.GoogleClient
+import com.quizit.backend.domain.auth.repository.TokenRepository
 import com.quizit.backend.domain.user.service.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -12,6 +13,7 @@ import java.net.URI
 @Service
 class GoogleOAuth2Service(
     private val googleClient: GoogleClient,
+    private val tokenRepository: TokenRepository,
     private val userService: UserService,
     @Value("\${uri.frontend}")
     private val frontendUri: String
@@ -27,10 +29,14 @@ class GoogleOAuth2Service(
                             .then(it)
                     }
             }
-            .flatMap { userService.deleteUserByEmailAndProvider(it.email, it.provider) }
-            .then(Mono.defer {
+            .flatMap {
+                Mono.`when`(userService.deleteUserByEmailAndProvider(it.email, it.provider),
+                    userService.getUserByEmailAndProvider(it.email, it.provider)
+                        .flatMap { user -> tokenRepository.deleteByUserId(user.id) })
+            }
+            .then(
                 ServerResponse.status(HttpStatus.FOUND)
                     .location(URI.create(frontendUri))
                     .build()
-            })
+            )
 }
