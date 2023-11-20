@@ -173,7 +173,7 @@ class QuizService(
                 user.unmarkQuiz(id)
             } else {
                 quiz.mark(userId)
-                user.unmarkQuiz(id)
+                user.markQuiz(id)
             }
         }.flatMap { (quiz, user) -> Mono.zip(quizRepository.save(quiz), userRepository.save(user)) }
             .map { (quiz) -> QuizResponse(quiz) }
