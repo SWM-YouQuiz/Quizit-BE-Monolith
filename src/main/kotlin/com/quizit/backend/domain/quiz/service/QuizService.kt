@@ -64,9 +64,8 @@ class QuizService(
         quizRepository.findAllByQuestionContains(keyword)
             .map { QuizResponse(it) }
 
-    fun getMarkedQuizzes(userId: String): Flux<QuizResponse> =
-        userRepository.findById(userId)
-            .flatMapMany { quizRepository.findAllByIdIn(it.markedQuizIds.toList()) }
+    fun getQuizzesByIdsIn(ids: List<String>, pageable: Pageable): Flux<QuizResponse> =
+        quizRepository.findAllByIdIn(ids, pageable)
             .map { QuizResponse(it) }
 
     fun createQuiz(userId: String, request: CreateQuizRequest): Mono<QuizResponse> =
