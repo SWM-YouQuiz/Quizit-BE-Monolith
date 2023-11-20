@@ -62,9 +62,22 @@ class QuizHandler(
         ServerResponse.ok()
             .body(quizService.getQuizzesByQuestionContains(request.queryParamNotNull("question")))
 
-    fun getMarkedQuizzes(request: ServerRequest): Mono<ServerResponse> =
-        ServerResponse.ok()
-            .body(quizService.getMarkedQuizzes(request.pathVariable("id")))
+    fun getQuizzesByIdsIn(request: ServerRequest): Mono<ServerResponse> =
+        with(request) {
+            bodyToMono<List<String>>()
+                .flatMap {
+                    ServerResponse.ok()
+                        .body(
+                            quizService.getQuizzesByIdsIn(
+                                it,
+                                PageRequest.of(
+                                    queryParamNotNull<Int>("page"),
+                                    queryParamNotNull<Int>("size")
+                                )
+                            )
+                        )
+                }
+        }
 
     fun createQuiz(request: ServerRequest): Mono<ServerResponse> =
         with(request) {
