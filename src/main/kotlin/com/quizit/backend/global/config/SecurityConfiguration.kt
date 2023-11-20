@@ -41,7 +41,7 @@ class SecurityConfiguration {
                     )
                     .permitAll()
                     .anyExchange()
-                    .permitAll()
+                    .authenticated()
             }
             oauth2Login { it.authenticationSuccessHandler(oAuth2LoginSuccessHandler) }
             addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHORIZATION)
