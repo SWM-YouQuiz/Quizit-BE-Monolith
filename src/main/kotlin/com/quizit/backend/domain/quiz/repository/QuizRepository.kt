@@ -13,12 +13,12 @@ interface QuizRepository : ReactiveMongoRepository<Quiz, String> {
 
     fun findAllByWriterId(writerId: String): Flux<Quiz>
 
-    fun findAllByIdIn(ids: List<String>): Flux<Quiz>
+    fun findAllByIdIn(ids: List<String>, pageable: Pageable): Flux<Quiz>
 
     fun findAllByQuestionContains(keyword: String): Flux<Quiz>
 
     fun findAllByCurriculumId(curriculumId: String): Flux<Quiz>
-    
+
     fun findAllByCourseId(courseId: String): Flux<Quiz>
 
     @Query("{'chapterId': ?0,'answerRate': {'\$gte': ?1, '\$lte': ?2 } }")
