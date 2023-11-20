@@ -44,7 +44,7 @@ class QuizServiceTest : BehaviorSpec() {
                 .also {
                     every { quizRepository.findAllByCourseId(any()) } returns listOf(it)
                     every { quizRepository.findAllByChapterId(any()) } returns listOf(it)
-                    every { quizRepository.findAllByIdIn(any()) } returns listOf(it)
+                    every { quizRepository.findAllByIdIn(any(), any()) } returns listOf(it)
                     every { quizRepository.findAllByQuestionContains(any()) } returns listOf(it)
                     every {
                         quizRepository.findAllByChapterIdAndAnswerRateBetween(any(), any(), any(), any())
@@ -120,6 +120,17 @@ class QuizServiceTest : BehaviorSpec() {
                 }
             }
 
+            When("특정 식별자 리스트에 속한 퀴즈들을 조회하면") {
+                val result = quizService.getQuizzesByIdsIn(listOf(ID), PAGEABLE)
+                    .getResult()
+
+                Then("해당 식별자 리스트에 속하는 퀴즈들이 주어진다.") {
+                    result.expectSubscription()
+                        .expectNext(quizResponse)
+                        .verifyComplete()
+                }
+            }
+
             When("유저가 특정 퀴즈를 수정하면") {
                 val updateQuizByIdRequest = createUpdateQuizByIdRequest(question = "updated_question")
                     .also {
@@ -141,30 +152,6 @@ class QuizServiceTest : BehaviorSpec() {
 
                 Then("해당 퀴즈가 삭제된다.") {
                     result.expectSubscription()
-                        .verifyComplete()
-                }
-            }
-        }
-
-        Given("유저가 저장한 퀴즈가 존재하는 경우") {
-            val quiz = createQuiz()
-                .also {
-                    every { quizRepository.findAllByIdIn(any()) } returns listOf(it)
-                }
-            createUser()
-                .also {
-                    every { userRepository.findById(any<String>()) } returns it
-                }
-
-            val quizResponse = QuizResponse(quiz)
-
-            When("유저가 본인이 저장한 퀴즈 보관함에 들어가면") {
-                val result = quizService.getMarkedQuizzes(ID)
-                    .getResult()
-
-                Then("유저가 저장한 퀴즈들이 주어진다.") {
-                    result.expectSubscription()
-                        .expectNext(quizResponse)
                         .verifyComplete()
                 }
             }
