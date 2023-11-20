@@ -148,6 +148,7 @@ class QuizService(
                     if (request.answer == quiz.answer) {
                         quiz.correctAnswer()
                         user.correctAnswer(id)
+                        user.checkLevel()
                     } else {
                         quiz.incorrectAnswer()
                         user.incorrectAnswer(id)
