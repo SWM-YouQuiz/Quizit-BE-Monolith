@@ -118,19 +118,5 @@ class UserService(
     fun deleteUserByEmailAndProvider(email: String, provider: Provider): Mono<Void> =
         userRepository.findByEmailAndProvider(email, provider)
             .switchIfEmpty(Mono.error(UserNotFoundException()))
-            .flatMap { user ->
-                Mono.`when`(
-                    userRepository.deleteById(user.id!!),
-                    quizRepository.findAll()
-                        .map {
-                            it.apply {
-                                likedUserIds.remove(id)
-                                unlikedUserIds.remove(id)
-                                markedUserIds.remove(id)
-                            }
-                        }
-                        .collectList()
-                        .flatMapMany { quizRepository.saveAll(it) }
-                )
-            }
+            .flatMap { user -> userRepository.deleteById(user.id!!) }
 }
