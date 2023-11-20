@@ -74,11 +74,13 @@ fun createGetAnswerByIdResponse(
 
 fun createCheckAnswerResponse(
     answer: Int = ANSWER,
-    solution: String = SOLUTION
+    solution: String = SOLUTION,
+    quiz: QuizResponse = createQuizResponse()
 ): CheckAnswerResponse =
     CheckAnswerResponse(
         answer = answer,
-        solution = solution
+        solution = solution,
+        quiz = quiz
     )
 
 fun createQuizResponse(

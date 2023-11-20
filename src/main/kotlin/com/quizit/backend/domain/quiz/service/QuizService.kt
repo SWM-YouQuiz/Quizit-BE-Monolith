@@ -135,30 +135,27 @@ class QuizService(
             }
 
     fun checkAnswer(id: String, userId: String, request: CheckAnswerRequest): Mono<CheckAnswerResponse> =
-        quizRepository.findById(id)
-            .switchIfEmpty(Mono.error(QuizNotFoundException()))
-            .cache()
-            .run {
-                Mono.zip(
-                    this,
-                    userRepository.findById(userId)
-                        .switchIfEmpty(Mono.error(UserNotFoundException()))
-                ).doOnNext { (quiz, user) ->
-                    if (request.answer == quiz.answer) {
-                        quiz.correctAnswer()
-                        user.correctAnswer(id)
-                        user.checkLevel()
-                    } else {
-                        quiz.incorrectAnswer()
-                        user.incorrectAnswer(id)
-                    }
-                }.flatMap { (quiz, user) -> Mono.zip(quizRepository.save(quiz), userRepository.save(user)) }
-                    .then(map {
-                        CheckAnswerResponse(
-                            answer = it.answer,
-                            solution = it.solution
-                        )
-                    })
+        Mono.zip(
+            quizRepository.findById(id)
+                .switchIfEmpty(Mono.error(QuizNotFoundException())),
+            userRepository.findById(userId)
+                .switchIfEmpty(Mono.error(UserNotFoundException()))
+        ).doOnNext { (quiz, user) ->
+            if (request.answer == quiz.answer) {
+                quiz.correctAnswer()
+                user.correctAnswer(id)
+                user.checkLevel()
+            } else {
+                quiz.incorrectAnswer()
+                user.incorrectAnswer(id)
+            }
+        }.flatMap { (quiz, user) -> Mono.zip(quizRepository.save(quiz), userRepository.save(user)) }
+            .map { (quiz) ->
+                CheckAnswerResponse(
+                    answer = quiz.answer,
+                    solution = quiz.solution,
+                    quiz = QuizResponse(quiz)
+                )
             }
 
     fun markQuiz(id: String, userId: String): Mono<QuizResponse> =
@@ -200,5 +197,4 @@ class QuizService(
             }
             .flatMap { quizRepository.save(it) }
             .map { QuizResponse(it) }
-
 }

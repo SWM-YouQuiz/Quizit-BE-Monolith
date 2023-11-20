@@ -68,8 +68,21 @@ class QuizControllerTest : ControllerTest() {
 
     private val checkAnswerResponseFields = listOf(
         "answer" desc "정답",
-        "solution" desc "해설"
-    )
+        "solution" desc "해설",
+        "quiz.id" desc "식별자",
+        "quiz.question" desc "지문",
+        "quiz.writerId" desc "작성자 식별자",
+        "quiz.chapterId" desc "챕터 식별자",
+        "quiz.answerRate" desc "정답률",
+        "quiz.options" desc "선지",
+        "quiz.correctCount" desc "정답 횟수",
+        "quiz.incorrectCount" desc "오답 횟수",
+        "quiz.markedUserIds" desc "저장한 유저 리스트",
+        "quiz.likedUserIds" desc "좋아요한 유저 리스트",
+        "quiz.unlikedUserIds" desc "싫어요한 유저 리스트",
+        "quiz.createdDate" desc "생성 날짜",
+
+        )
 
     init {
         describe("getQuizById()는") {
