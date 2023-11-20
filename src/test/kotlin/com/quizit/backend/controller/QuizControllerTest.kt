@@ -273,21 +273,26 @@ class QuizControllerTest : ControllerTest() {
             }
         }
 
-        describe("getMarkedQuizzes()는") {
-            context("유저가 저장한 퀴즈가 존재하는 경우") {
-                every { quizService.getMarkedQuizzes(any()) } returns listOf(createQuizResponse())
+        describe("getQuizzesByIdsIn()는") {
+            context("퀴즈들이 존재하는 경우") {
+                every { quizService.getQuizzesByIdsIn(any(), any()) } returns listOf(createQuizResponse())
                 withMockUser()
 
                 it("상태 코드 200과 quizResponse들을 반환한다.") {
                     webClient
-                        .get()
-                        .uri("/quiz/marked-user/{id}", ID)
+                        .post()
+                        .uri("/quiz/ids?page={page}&size={size}", 0, 1)
+                        .bodyValue(listOf(ID))
                         .exchange()
                         .expectStatus()
                         .isOk
                         .expectBody<List<QuizResponse>>()
                         .document(
-                            "유저가 저장한 퀴즈 전체 조회 성공(200)",
+                            "식별자 리스트를 통한 퀴즈 전체 조회 성공(200)",
+                            queryParameters(
+                                "page" paramDesc "페이지 번호",
+                                "size" paramDesc "페이지 크기",
+                            ),
                             responseFields(quizResponseFields.toListFields())
                         )
                 }
